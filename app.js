@@ -1,6 +1,6 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const cTable = require('console.table');
+const cTable = require("console.table");
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
     user: "root",
   
     // Enter your password here, if any
-    password: "",
+    password: "Appleroof515!",
     database: "companyDB"
   });
   
@@ -29,12 +29,11 @@ function start() {
       type: "rawlist",
       message: "What would you like to do?",
       choices: [
-        "View all employees",
-        "View employee's by role ",
-        "View departments",
-        "Add Employee",
-        "Add Role",
         "Add Department",
+        "Add Role",
+        "Add Employee",
+        "View all employees",
+        "View roles ",
         "Update employee role",
         "Exit"
       ]
@@ -70,7 +69,54 @@ function viewEmployees (){
 
 // Adds employee
 function addEmployee (){
-  console.log("hello")
+    
+    connection.query("SELECT * FROM role", function (err, result) {
+    if (err) throw err;
+      inquirer.prompt([
+        {
+          name: "firstName",
+          message: "What is the employee's first name? "
+        },
+        {
+          name: "lastName",
+          message: "What is the employee's last name? "
+        },
+        {
+          // Gets lists of roles from database
+            type: "list",
+            name: "chooseRole",
+            message: "Which role is this employee in?",
+            choices: function (){
+              var choiceRole = []
+              for (var i = 0; i < result.length; i++){
+                choiceRole.push(result[i].title);
+              }
+              return choiceRole
+            }
+        }]).then (answer => {
+          // Gets chosen role into a variable
+          var chosenRole;
+          for (var i = 0; i < result.length; i++) {
+            if (result[i].title === answer.chooseRole){
+              chosenRole = result[i];
+            }
+          }
+          // Insert employee into database
+          var query = "INSERT INTO employee SET ?"
+          connection.query(query, {
+            first_name: answer.firstName,
+            last_name: answer.lastName,
+            role_id: chosenRole.id
+          }, function (err, res) {
+            if (err) throw err;
+            console.log("Successfully Added")
+            console.log("------------------------------------------")
+            start()
+          }
+          )
+
+        })
+    })
 }
 
 // Adds Departmemnt 
@@ -106,6 +152,7 @@ function addRole (){
             message: "Enter the salary for this role (no commas): "
         },
         {
+          // Gets list of departments from database
             type: "list",
             name: "chooseDepartment",
             message: "Which department is this role in?",
@@ -117,12 +164,14 @@ function addRole (){
               return choiceDepart
             }
           }]).then (answer => {
+            // Gets chosen department into a variable
            var chosenDepart;
            for (var i = 0; i < result.length; i++) {
             if (result[i].name === answer.chooseDepartment) {
                 chosenDepart = result[i];
             }
           }
+          // Insert into database
           var query = "INSERT INTO role SET ?"
           connection.query(query, {
             title: answer.roleTitle,
