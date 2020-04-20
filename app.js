@@ -44,6 +44,15 @@ function start() {
                 viewEmployees();
                 break;
 
+            case "Add Employee":
+                addEmployee();
+                break;
+
+            case "Add Department":
+                  addDepartment();
+                  break;
+  
+
             case "Exit":
                 connection.end();
                 break;
@@ -51,7 +60,33 @@ function start() {
     })
 }
 
+// Views all employees
 function viewEmployees (){
-    console.log("Employee here")
+    console.log("hello")
 }
+
+// Adds employee
+function addEmployee (){
+  console.log("hello")
+}
+
+// Adds Departmemnt 
+function addDepartment (){
+  inquirer.prompt({
+      name: "departmentName",
+      message: "Enter the department name: "
+  }).then (function (answer) {
+    var query =  "INSERT INTO department SET ?"
+    connection.query(query, { name: answer.departmentName }, function(err, res) {
+      if (err) throw err;
+      console.log("Successfully Added")
+      console.log("------------------------------------------")
+      start()
+    })
+  })
+
+  }
+
+
+
 
