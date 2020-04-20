@@ -51,8 +51,11 @@ function start() {
             case "Add Department":
                   addDepartment();
                   break;
-  
 
+            case "Add Role":
+                addRole();
+                break;
+  
             case "Exit":
                 connection.end();
                 break;
@@ -87,6 +90,51 @@ function addDepartment (){
 
   }
 
-
-
-
+// Adds Role
+function addRole (){
+  connection.query("SELECT * FROM department", function (err, result) {
+    if (err) throw err;
+    inquirer
+    .prompt([
+        {
+            name: "roleTitle",
+            message: "Enter the role title: "
+        },
+        {
+            type: "number",
+            name: "roleSalary",
+            message: "Enter the salary for this role (no commas): "
+        },
+        {
+            type: "list",
+            name: "chooseDepartment",
+            message: "Which department is this role in?",
+            choices: function () {
+              var choiceDepart = [];
+              for (var i = 0; i < result.length; i++) {
+                choiceDepart.push(result[i].name);
+            }
+              return choiceDepart
+            }
+          }]).then (answer => {
+           var chosenDepart;
+           for (var i = 0; i < result.length; i++) {
+            if (result[i].name === answer.chooseDepartment) {
+                chosenDepart = result[i];
+            }
+          }
+          var query = "INSERT INTO role SET ?"
+          connection.query(query, {
+            title: answer.roleTitle,
+            salary: answer.roleSalary,
+            department_id: chosenDepart.id 
+          }, function (err, res) {
+              if (err) throw err;
+              console.log("Successfully Added")
+              console.log("------------------------------------------")
+              start()
+            }
+           )
+       })
+    })
+}
