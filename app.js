@@ -34,6 +34,7 @@ function start() {
         "Add Employee",
         "View all employees",
         "View roles",
+        "View departments",
         "Update employee role",
         "Delete employee",
         "Exit"
@@ -46,6 +47,10 @@ function start() {
 
             case "View roles":
               viewRoles();
+              break;
+
+            case "View departments":
+              viewDepartments();
               break;
 
             case "Add Employee":
@@ -82,6 +87,17 @@ function viewEmployees (){
 // Views all roles
 function viewRoles () {
   connection.query("SELECT * FROM role INNER JOIN department WHERE department.id = role.id" , function (err, result){
+    if(err) throw err;
+    console.log("------------------------------------------")
+    console.table(result)
+    console.log("------------------------------------------")
+    start()
+  })
+}
+
+// Views all departments
+function viewDepartments() {
+  connection.query("SELECT * FROM department", function(err,result){
     if(err) throw err;
     console.log("------------------------------------------")
     console.table(result)
