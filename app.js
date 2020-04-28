@@ -35,7 +35,6 @@ function start() {
         "View all employees",
         "View roles",
         "View departments",
-        "Update employee role",
         "Delete employee",
         "Exit"
       ]
@@ -64,6 +63,10 @@ function start() {
             case "Add Role":
                 addRole();
                 break;
+
+            case "Delete employee":
+              deleteEmployee();
+              break;
   
             case "Exit":
                 connection.end();
@@ -75,7 +78,7 @@ function start() {
 // Views all employees
 function viewEmployees (){
     
-    connection.query("SELECT * FROM employee INNER JOIN role WHERE employee.role_id = role.id", function (err, result) {
+    connection.query("SELECT * FROM employee", function (err, result) {
       if (err) throw err;
       console.log("------------------------------------------")
       console.table(result)
@@ -86,7 +89,7 @@ function viewEmployees (){
 
 // Views all roles
 function viewRoles () {
-  connection.query("SELECT * FROM role INNER JOIN department WHERE department.id = role.id" , function (err, result){
+  connection.query("SELECT * FROM role" , function (err, result){
     if(err) throw err;
     console.log("------------------------------------------")
     console.table(result)
@@ -148,6 +151,7 @@ function addEmployee (){
             role_id: chosenRole.id
           }, function (err, res) {
             if (err) throw err;
+            console.log("------------------------------------------")
             console.log("Successfully Added")
             console.log("------------------------------------------")
             start()
@@ -167,6 +171,7 @@ function addDepartment (){
     var query =  "INSERT INTO department SET ?"
     connection.query(query, { name: answer.departmentName }, function(err, res) {
       if (err) throw err;
+      console.log("------------------------------------------")
       console.log("Successfully Added")
       console.log("------------------------------------------")
       start()
@@ -218,6 +223,7 @@ function addRole (){
             department_id: chosenDepart.id 
           }, function (err, res) {
               if (err) throw err;
+              console.log("------------------------------------------")
               console.log("Successfully Added")
               console.log("------------------------------------------")
               start()
@@ -225,4 +231,43 @@ function addRole (){
            )
        })
     })
+}
+
+
+// Deletes employee
+function deleteEmployee() {
+  connection.query("SELECT * FROM employee", function (err, result) {
+   
+    if (err) throw err;
+    var choiceEmployee = []
+    for (var i in result) {
+      choiceEmployee.push(`ID: ${result[i].id} || Name: ${result[i].first_name} ${result[i].last_name}`);
+  }
+  inquirer.prompt({ 
+    type: "list",
+    name: "chooseEmployee",
+    message: "Which employee do you want to delete?",
+    choices: choiceEmployee,
+
+}).then (res => {
+
+  let chosen;
+  for (var i = 0; i < result.length; i++) {
+    if (choiceEmployee.id === res.chooseEmployee.id) {
+      chosen = result[i];
+  
+    }
+  }
+
+  connection.query ( "DELETE FROM employee WHERE id =?", [chosen.id], function(err, response){
+   
+    if (err) throw err;
+    console.log("------------------------------------------")
+    console.log("Successfully Deleted")
+    console.log("------------------------------------------")
+    start()
+  })
+})
+  })
+
 }
