@@ -20,6 +20,6 @@ Then use 'node app.js' to actually start the program.
 
 ## Demo Screenshots:
 <img src="/demo/1.jpg">
-<img src="https://imgur.com/BH88tZm.jpg">
-<img src="https://imgur.com/BH88tZm.jpg">
-<img src="https://imgur.com/BH88tZm.jpg">
+<img src="/demo/2.jpg">
+<img src="/demo/3.jpg">
+<img src="/demo/4.jpg">
